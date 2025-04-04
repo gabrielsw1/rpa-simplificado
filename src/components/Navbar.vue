@@ -96,7 +96,7 @@
     { name: 'Início', href: '#' },
     { name: 'Por que Automatizar?', href: '#expertise' },
     { name: 'Sobre Mim', href: '#sobre' },
-    { name: 'Vídeos', href: '#videos' },
+    { name: 'Vídeos', href: '#youtube' },
     { name: 'Contato', href: '#contato' }
   ]
 </script>

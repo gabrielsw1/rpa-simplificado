@@ -8,7 +8,7 @@
           necessidades
         </p>
 
-        <form @submit.prevent="handleSubmit" class="bg-white p-8 rounded-lg shadow-sm">
+        <form @submit.prevent="sendEmail" class="bg-white p-8 rounded-lg shadow-sm">
           <div class="grid md:grid-cols-2 gap-6">
             <div>
               <label for="name" class="block text-sm font-medium text-gray-700 mb-1">
@@ -17,12 +17,10 @@
               <input
                 type="text"
                 id="name"
-                v-model="form.name"
+                v-model="formData.name"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                :class="{ 'border-red-500': errors.name }"
                 required
               />
-              <p v-if="errors.name" class="text-red-500 text-sm mt-1">{{ errors.name }}</p>
             </div>
 
             <div>
@@ -30,12 +28,10 @@
               <input
                 type="email"
                 id="email"
-                v-model="form.email"
+                v-model="formData.email"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                :class="{ 'border-red-500': errors.email }"
                 required
               />
-              <p v-if="errors.email" class="text-red-500 text-sm mt-1">{{ errors.email }}</p>
             </div>
 
             <div>
@@ -45,7 +41,7 @@
               <input
                 type="text"
                 id="company"
-                v-model="form.company"
+                v-model="formData.company"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 required
               />
@@ -58,7 +54,7 @@
               <input
                 type="tel"
                 id="phone"
-                v-model="form.phone"
+                v-model="formData.phone"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 required
               />
@@ -71,7 +67,7 @@
             </label>
             <textarea
               id="message"
-              v-model="form.message"
+              v-model="formData.message"
               rows="4"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               required
@@ -79,7 +75,11 @@
           </div>
 
           <div class="mt-6">
-            <button type="submit" class="btn-primary w-full" :disabled="isLoading">
+            <button
+              type="submit"
+              class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+              :disabled="isLoading"
+            >
               <span v-if="isLoading">Enviando...</span>
               <span v-else>Enviar Mensagem</span>
             </button>
@@ -114,10 +114,15 @@
 </template>
 
 <script setup>
-  import { reactive, ref } from 'vue'
+  import { ref, onMounted } from 'vue'
   import emailjs from '@emailjs/browser'
+  import { emailConfig } from '../config/email'
 
-  const form = reactive({
+  onMounted(() => {
+    emailjs.init(emailConfig.publicKey)
+  })
+
+  const formData = ref({
     name: '',
     email: '',
     company: '',
@@ -125,67 +130,52 @@
     message: ''
   })
 
-  const errors = reactive({
-    name: '',
-    email: ''
-  })
-
   const isLoading = ref(false)
   const successMessage = ref('')
   const errorMessage = ref('')
 
-  const validateEmail = email => {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return re.test(email)
-  }
-
-  const handleSubmit = async () => {
-    // Reset messages and errors
+  const sendEmail = async () => {
+    isLoading.value = true
     successMessage.value = ''
     errorMessage.value = ''
-    errors.name = ''
-    errors.email = ''
-
-    // Validate form
-    if (form.name.length < 3) {
-      errors.name = 'Nome deve ter pelo menos 3 caracteres'
-      return
-    }
-
-    if (!validateEmail(form.email)) {
-      errors.email = 'E-mail inválido'
-      return
-    }
 
     try {
-      isLoading.value = true
-
-      // Configuração do EmailJS
       const templateParams = {
-        from_name: form.name,
-        from_email: form.email,
-        company: form.company,
-        phone: form.phone,
-        message: form.message
+        from_name: formData.value.name,
+        from_email: formData.value.email,
+        company: formData.value.company,
+        phone: formData.value.phone,
+        message: formData.value.message,
+        to_email: emailConfig.toEmail,
+        reply_to: formData.value.email
       }
 
-      // Enviar email
-      await emailjs.send(
-        'YOUR_SERVICE_ID', // Substitua pelo seu Service ID
-        'YOUR_TEMPLATE_ID', // Substitua pelo seu Template ID
-        templateParams,
-        'YOUR_PUBLIC_KEY' // Substitua pela sua Public Key
+      console.log('Enviando email com os seguintes parâmetros:', templateParams)
+      console.log('Configuração do EmailJS:', emailConfig)
+
+      const response = await emailjs.send(
+        emailConfig.serviceId,
+        emailConfig.templateId,
+        templateParams
       )
 
-      // Reset form
-      Object.keys(form).forEach(key => {
-        form[key] = ''
-      })
+      console.log('Resposta do EmailJS:', response)
 
-      successMessage.value = 'Mensagem enviada com sucesso! Entraremos em contato em breve.'
+      if (response.status === 200) {
+        successMessage.value = 'Mensagem enviada com sucesso! Entraremos em contato em breve.'
+        formData.value = {
+          name: '',
+          email: '',
+          company: '',
+          phone: '',
+          message: ''
+        }
+      } else {
+        throw new Error('Erro no envio do email')
+      }
     } catch (error) {
-      console.error('Erro ao enviar email:', error)
-      errorMessage.value = 'Erro ao enviar mensagem. Por favor, tente novamente mais tarde.'
+      console.error('Erro detalhado ao enviar email:', error)
+      errorMessage.value = `Erro ao enviar mensagem: ${error.message}. Por favor, tente novamente mais tarde.`
     } finally {
       isLoading.value = false
     }
