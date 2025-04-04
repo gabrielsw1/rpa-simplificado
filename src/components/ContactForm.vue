@@ -8,78 +8,66 @@
           necessidades
         </p>
 
-        <form @submit.prevent="handleSubmit" class="bg-white p-8 rounded-lg shadow-sm">
-          <div class="grid md:grid-cols-2 gap-6">
-            <div>
-              <label for="name" class="block text-sm font-medium text-gray-700 mb-1">
-                Nome Completo
-              </label>
-              <input
-                type="text"
-                id="name"
-                v-model="form.name"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                :class="{ 'border-red-500': errors.name }"
-                required
-              />
-              <p v-if="errors.name" class="text-red-500 text-sm mt-1">{{ errors.name }}</p>
-            </div>
-
-            <div>
-              <label for="email" class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
-              <input
-                type="email"
-                id="email"
-                v-model="form.email"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                :class="{ 'border-red-500': errors.email }"
-                required
-              />
-              <p v-if="errors.email" class="text-red-500 text-sm mt-1">{{ errors.email }}</p>
-            </div>
-
-            <div>
-              <label for="company" class="block text-sm font-medium text-gray-700 mb-1">
-                Empresa
-              </label>
-              <input
-                type="text"
-                id="company"
-                v-model="form.company"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                required
-              />
-            </div>
-
-            <div>
-              <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">
-                Telefone
-              </label>
-              <input
-                type="tel"
-                id="phone"
-                v-model="form.phone"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                required
-              />
-            </div>
-          </div>
-
-          <div class="mt-6">
-            <label for="message" class="block text-sm font-medium text-gray-700 mb-1">
-              Mensagem
-            </label>
-            <textarea
-              id="message"
-              v-model="form.message"
-              rows="4"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+        <form @submit.prevent="sendEmail" class="space-y-6">
+          <div>
+            <label for="name" class="block text-sm font-medium text-gray-700">Nome</label>
+            <input
+              type="text"
+              id="name"
+              v-model="formData.name"
               required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary bg-white text-gray-900"
             />
           </div>
 
-          <div class="mt-6">
-            <button type="submit" class="btn-primary w-full">Enviar Mensagem</button>
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+            <input
+              type="email"
+              id="email"
+              v-model="formData.email"
+              required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary bg-white text-gray-900"
+            />
+          </div>
+
+          <div>
+            <label for="phone" class="block text-sm font-medium text-gray-700">Telefone</label>
+            <input
+              type="tel"
+              id="phone"
+              v-model="formData.phone"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary bg-white text-gray-900"
+            />
+          </div>
+
+          <div>
+            <label for="message" class="block text-sm font-medium text-gray-700">Mensagem</label>
+            <textarea
+              id="message"
+              v-model="formData.message"
+              required
+              rows="4"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary bg-white text-gray-900"
+            />
+          </div>
+
+          <div>
+            <button
+              type="submit"
+              :disabled="isLoading"
+              class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span v-if="isLoading">Enviando...</span>
+              <span v-else>Enviar Mensagem</span>
+            </button>
+          </div>
+
+          <div v-if="successMessage" class="text-green-600 text-sm text-center">
+            {{ successMessage }}
+          </div>
+          <div v-if="errorMessage" class="text-red-600 text-sm text-center">
+            {{ errorMessage }}
           </div>
 
           <div class="mt-4 text-center">
@@ -100,48 +88,56 @@
 </template>
 
 <script setup>
-  import { ref, reactive } from 'vue'
+  import { ref } from 'vue'
+  import emailjs from '@emailjs/browser'
 
-  const form = reactive({
+  const formData = ref({
     name: '',
     email: '',
-    company: '',
     phone: '',
     message: ''
   })
 
-  const errors = reactive({
-    name: '',
-    email: ''
-  })
+  const isLoading = ref(false)
+  const successMessage = ref('')
+  const errorMessage = ref('')
 
-  const validateEmail = email => {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return re.test(email)
-  }
+  const sendEmail = async () => {
+    isLoading.value = true
+    successMessage.value = ''
+    errorMessage.value = ''
 
-  const handleSubmit = () => {
-    // Reset errors
-    errors.name = ''
-    errors.email = ''
-
-    // Validate form
-    if (form.name.length < 3) {
-      errors.name = 'Nome deve ter pelo menos 3 caracteres'
-    }
-
-    if (!validateEmail(form.email)) {
-      errors.email = 'E-mail inválido'
-    }
-
-    // If no errors, submit form
-    if (!errors.name && !errors.email) {
-      // Here you would typically send the form data to your backend
-      console.log('Form submitted:', form)
-      // Reset form
-      Object.keys(form).forEach(key => {
-        form[key] = ''
-      })
+    try {
+      await emailjs.send('service_8g4q0q8', 'template_8g4q0q8', formData.value, '8g4q0q8')
+      successMessage.value = 'Mensagem enviada com sucesso!'
+      formData.value = {
+        name: '',
+        email: '',
+        phone: '',
+        message: ''
+      }
+    } catch (error) {
+      errorMessage.value = 'Erro ao enviar mensagem. Tente novamente.'
+      console.error('Erro ao enviar email:', error)
+    } finally {
+      isLoading.value = false
     }
   }
 </script>
+
+<style scoped>
+  input,
+  textarea {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: white;
+    color: #1a1a1a;
+  }
+
+  input:focus,
+  textarea:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.5);
+  }
+</style>
