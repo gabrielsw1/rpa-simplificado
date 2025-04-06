@@ -620,13 +620,131 @@
 </script>
 
 <style scoped>
-  .curriculo {
-    padding-top: 4rem; /* Para compensar o navbar fixo */
-  }
-
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
   .curriculo {
     font-family: 'Inter', sans-serif;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+    color: #333;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .profile-pic {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin-right: 2rem;
+    object-fit: cover;
+  }
+
+  .contact-info {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .contact-info a {
+    color: #666;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .contact-info a:hover {
+    color: #f97316;
+  }
+
+  .section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #f97316;
+  }
+
+  .experience-item {
+    margin-bottom: 1.5rem;
+    padding-left: 1rem;
+    border-left: 3px solid #f97316;
+  }
+
+  .experience-title {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+
+  .experience-date {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .experience-description {
+    color: #444;
+  }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .skill-category {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.5rem;
+  }
+
+  .skill-title {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #f97316;
+  }
+
+  .skill-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .skill-list li {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .skill-list li::before {
+    content: '✓';
+    color: #f97316;
+  }
+
+  @media print {
+    .curriculo {
+      padding: 0;
+    }
+
+    .section {
+      box-shadow: none;
+      border: 1px solid #ddd;
+    }
+
+    .contact-info a {
+      color: #333;
+    }
   }
 </style>

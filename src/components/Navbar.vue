@@ -9,17 +9,27 @@
 
         <!-- Desktop Navigation -->
         <div class="hidden md:flex items-center space-x-8">
-          <a
-            v-for="item in navigation"
-            :key="item.name"
-            :href="item.href"
-            class="text-secondary hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+          <router-link
+            to="/"
+            class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
           >
-            {{ item.name }}
+            Início
+          </router-link>
+          <router-link
+            to="/curriculo"
+            class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          >
+            Currículo
+          </router-link>
+          <a
+            href="/#videos"
+            class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          >
+            Vídeos
           </a>
           <a
-            href="#contato"
-            class="bg-primary text-white hover:bg-primary/90 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+            href="/#contato"
+            class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 shadow-md hover:shadow-lg"
           >
             Fale Conosco
           </a>
@@ -68,17 +78,27 @@
     <!-- Mobile Navigation -->
     <div class="md:hidden" :class="{ block: isOpen, hidden: !isOpen }">
       <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white">
-        <a
-          v-for="item in navigation"
-          :key="item.name"
-          :href="item.href"
+        <router-link
+          to="/"
           class="text-secondary hover:text-primary block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
         >
-          {{ item.name }}
+          Início
+        </router-link>
+        <router-link
+          to="/curriculo"
+          class="text-secondary hover:text-primary block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
+        >
+          Currículo
+        </router-link>
+        <a
+          href="/#videos"
+          class="text-secondary hover:text-primary block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
+        >
+          Vídeos
         </a>
         <a
-          href="#contato"
-          class="bg-primary text-white hover:bg-primary/90 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
+          href="/#contato"
+          class="bg-orange-500 hover:bg-orange-600 text-white block px-4 py-2 rounded-md text-base font-medium transition-colors duration-200 shadow-md hover:shadow-lg"
         >
           Fale Conosco
         </a>
@@ -91,12 +111,4 @@
   import { ref } from 'vue'
 
   const isOpen = ref(false)
-
-  const navigation = [
-    { name: 'Início', href: '#' },
-    { name: 'Por que Automatizar?', href: '#expertise' },
-    { name: 'Sobre Mim', href: '#sobre' },
-    { name: 'Vídeos', href: '#youtube' },
-    { name: 'Contato', href: '#contato' }
-  ]
 </script>

@@ -1,22 +1,13 @@
 <script setup>
   import Navbar from './components/Navbar.vue'
-  import HeroSection from './components/HeroSection.vue'
-  import AboutSection from './components/AboutSection.vue'
-  import ExpertiseSection from './components/ExpertiseSection.vue'
-  import YouTubeSection from './components/YouTubeSection.vue'
-  import ContactSection from './components/ContactSection.vue'
   import Footer from './components/Footer.vue'
 </script>
 
 <template>
   <div class="min-h-screen bg-gray-50">
     <Navbar />
-    <main class="space-y-16 md:space-y-24 pt-16 md:pt-24">
-      <HeroSection />
-      <ExpertiseSection />
-      <AboutSection />
-      <YouTubeSection />
-      <ContactSection />
+    <main>
+      <router-view />
     </main>
     <Footer />
   </div>

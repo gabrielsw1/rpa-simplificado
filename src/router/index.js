@@ -1,18 +1,22 @@
 import { createRouter, createWebHistory } from 'vue-router'
-
-const routes = [
-  {
-    path: '/',
-    name: 'Home',
-    component: () => import('../App.vue')
-  },
-  // Adicione mais rotas conforme necessário
-]
+import HomeView from '@/views/HomeView.vue'
+import Curriculo from '@/views/Curriculo.vue'
 
 const router = createRouter({
-  history: createWebHistory(),
-  routes,
-  scrollBehavior(to, from, savedPosition) {
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: [
+    {
+      path: '/',
+      name: 'home',
+      component: HomeView
+    },
+    {
+      path: '/curriculo',
+      name: 'curriculo',
+      component: Curriculo
+    }
+  ],
+  scrollBehavior(to, _from, _savedPosition) {
     if (to.hash) {
       return {
         el: to.hash,
@@ -23,4 +27,4 @@ const router = createRouter({
   }
 })
 
-export default router 
+export default router
